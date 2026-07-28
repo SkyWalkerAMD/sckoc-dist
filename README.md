@@ -1,0 +1,2 @@
+# sckoc-dist
+Hardware Monitor
