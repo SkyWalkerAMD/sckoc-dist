@@ -8,111 +8,99 @@
 
 English | [中文](README.md)
 
-**Distribution repository for sckoc.** No source here — this repository carries
-the built artifacts and the package repository only.
+A **read-only** hardware monitor for Intel and AMD servers and workstations
 
 </div>
 
-A **read-only** hardware monitor for Intel and AMD servers and workstations.
-Data comes from MSRs, SMBIOS, sysfs, the AMD HSMP mailbox, Intel TPMI MMIO and
-the BMC over IPMI. `sckoc mon` gives a two-level live view, per socket and per
-core, from a single sampling window: voltage, temperature, frequency, power and
-C-state residency. `sckoc info` reports the platform configuration that does
-not change at runtime. No register is ever written, so it runs under Secure
-Boot and kernel lockdown (integrity).
+One command shows what the CPU is doing right now: per-core frequency,
+temperature, voltage, power and load, plus memory, cache and power limits.
 
-## Installation
+**Read-only** — it writes no register and changes no setting, so it is safe to
+run on a machine that is busy doing real work.
 
-**Package repository** (configure once, then update through the package manager)
+## Install
+
+The repository is the easiest route; set it up once and updates come with the
+rest of the system:
 
 ```bash
 curl -fsSL https://skywalkeramd.github.io/sckoc-dist/setup.sh | sudo bash
-sudo dnf install -y sckoc      # or on Debian/Ubuntu: sudo apt update && sudo apt install -y sckoc
+sudo dnf install -y sckoc          # on Debian/Ubuntu: sudo apt update && sudo apt install -y sckoc
 ```
 
-`setup.sh` detects dnf/yum/apt and writes the matching repository configuration.
-
-**Install a package directly** (see [Releases](https://github.com/SkyWalkerAMD/sckoc-dist/releases/latest))
+Or install a package from [Releases](https://github.com/SkyWalkerAMD/sckoc-dist/releases/latest) directly:
 
 ```bash
-sudo dnf install -y ./sckoc-<version>-1.x86_64.rpm     # one package for el7 / el8 / el9 / Fedora
-sudo apt install -y ./sckoc_<version>-1_amd64.deb      # any amd64 Debian/Ubuntu
+sudo dnf install -y ./sckoc-<version>-1.x86_64.rpm    # one package for el7 / el8 / el9 / Fedora
+sudo apt install -y ./sckoc_<version>-1_amd64.deb     # any amd64 Debian / Ubuntu
 ```
 
-**Bare binary** (outside the package manager)
+Or just take the binary and skip the package manager:
 
 ```bash
 chmod +x sckoc-<version>-static-x86_64
 sudo install -m755 sckoc-<version>-static-x86_64 /usr/local/bin/sckoc
-sudo modprobe msr                                      # needed on Intel
+sudo modprobe msr                                     # needed on Intel
 ```
 
-## Runtime requirements
-
-Root is required. Intel needs the kernel `msr` module — the rpm and deb load it
-and set it to autoload; with the bare binary, run `modprobe msr` yourself
-(`sckoc uncore` and `sckoc info` work without it).
-
-The binary is statically linked against musl and has **no runtime library
-dependencies**. The newest syscall it uses is `set_tid_address` (Linux 2.6), so
-one file covers el7 (kernel 3.10) through rawhide — there is no per-distribution
-build to pick.
-
-`ipmitool` is optional: where it is installed and the platform has a BMC, it
-supplies DIMM and CPU temperatures and the DRAM rail voltage; without it those
-fields stay blank. `dmidecode` is not required — SMBIOS is read directly from
-`/sys/firmware/dmi/tables/DMI`.
-
-## Usage
-
-```
-sckoc [mon] [--json]      live per-socket and per-core view (default command)
-sckoc info                static platform report
-sckoc vid                 per-core VID / per-rail voltage
-sckoc uncore [--json]     uncore/mesh frequency limits and BIOS boot values (Intel)
-sckoc dump <reg> [hi:lo]  read one MSR per socket, optional bitfield
-sckoc uninstall [-y]      remove sckoc
-sckoc version | -V
-sckoc help | -h
-```
-
-Environment: `INT=<sec>` sampling window (default 1), `DMI=<path>`,
-`IPMITOOL=<path>`.
+## Getting started
 
 ```bash
-sudo sckoc                 # one-shot overview
-sudo INT=2 sckoc           # 2-second sampling window
-sudo watch -n 3 sckoc      # refresh every 3 s
-sudo sckoc dump 0x198 47:32
+sudo sckoc            # live overview
+sudo sckoc info       # platform report
+sudo sckoc --watch    # refresh every 2 seconds
 ```
 
-`--json` emits a machine-readable document (schema `sckoc-mon-v1`) carrying the
-core subset of the panel. Full field documentation is in `man sckoc`.
+That is most of it. On a many-core machine the table splits into columns by
+itself — only when the window is too short for one list, and back to a single
+list when you make the window taller.
 
-## Supported platforms
+## Commands you will use
 
-- **Intel** family 6: Xeon W890/W790 platforms, HEDT (X299) and earlier models with MSR support
-- **AMD** family 19h/1Ah (Zen3/4/5): EPYC, Threadripper, consumer Ryzen
-
-Some fields depend on platform drivers. A missing one degrades that field alone
-and leaves the rest of the output intact:
-
-| Field | Depends on |
+| Command | What it does |
 |---|---|
-| Intel uncore/mesh frequency | `intel-uncore-frequency(-tpmi)` (kernel 5.6+/6.5+, backported in RHEL 9); falls back to the uncore MSRs or TPMI MMIO |
-| AMD temperature | `k10temp`; where the kernel lacks per-CCD sensors for the model, falls back to socket Tctl marked with `*` |
-| AMD FCLK/PPT/bandwidth | `/dev/hsmp` (`amd_hsmp` or `hsmp_acpi`, plus HSMP Support enabled in the BIOS). Consumer Ryzen has no HSMP |
-| DIMM/CPU temperature, DRAM rail voltage | BMC + `ipmitool` |
-| Board voltage rails | a Super I/O driver such as `nct6775` |
+| `sckoc` | live overview, per socket and per core |
+| `sckoc info` | platform report: security state, ratio ceilings, power limits, memory, cache |
+| `sckoc vid` | per-core requested voltage |
+| `sckoc uncore` | uncore / mesh frequency limits (Intel) |
+| `sckoc --watch=3` | redraw in place every 3 seconds |
+| `sckoc --json` | machine-readable output, for feeding a monitoring system |
+| `sckoc help` | full help |
 
-On AMD, the driver setup (k10temp, HSMP, Super I/O) can be handled by the
-`install.sh` shipped in Releases.
+`man sckoc` has the details.
+
+## What it needs
+
+Root. On Intel the kernel `msr` module is required — the rpm and deb set that
+up for you; with the bare binary run `sudo modprobe msr` once.
+
+The binary is statically linked and has **no runtime library dependencies**, so
+one file runs from el7 (kernel 3.10) to the newest distribution. There is no
+version to pick.
+
+If `ipmitool` is installed, BMC DIMM and CPU temperatures and the DRAM rail
+voltage appear as well; without it those fields stay blank and nothing else
+changes.
+
+## Why is something showing N/A?
+
+That is by design — when a value cannot be read, sckoc says `N/A` and explains
+why rather than inventing a number. The usual causes:
+
+| Shown | Cause |
+|---|---|
+| Intel uncore/mesh is N/A | no `intel-uncore-frequency` driver (in-kernel since 5.6) |
+| AMD temperature is N/A | no `k10temp`, or a kernel too old to know this CPU |
+| AMD FCLK / PPT is N/A | no `/dev/hsmp`, and HSMP Support must be enabled in the BIOS. Consumer Ryzen has none |
+| memory temperature, DRAM voltage blank | no BMC on this machine, or `ipmitool` not installed |
+
+On AMD, the `install.sh` in Releases can set those drivers up for you.
 
 ## Uninstall
 
 ```bash
-sudo dnf remove sckoc          # or sudo apt remove sckoc
-sudo sckoc uninstall -y        # for installs outside a package manager
+sudo dnf remove sckoc      # or sudo apt remove sckoc
+sudo sckoc uninstall -y    # if it was not installed by a package manager
 ```
 
 ## License
@@ -121,8 +109,7 @@ Proprietary. Copyright (C) 2026 SkyWalkerAMD. All rights reserved.
 
 Licensed for internal use including commercial use; redistribution and reverse
 engineering are not permitted. Full terms ship with the package under
-`/usr/share/doc/sckoc/` and alongside the Releases.
-
-The distributed binary is statically linked against the musl C library (MIT).
+`/usr/share/doc/sckoc/`. The distributed binary is statically linked against
+the musl C library (MIT).
 
 For redistribution rights or any other licensing question: scka7t@gmail.com
