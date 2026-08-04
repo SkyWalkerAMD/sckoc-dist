@@ -91,10 +91,20 @@ why rather than inventing a number. The usual causes:
 |---|---|
 | Intel uncore/mesh is N/A | no `intel-uncore-frequency` driver (in-kernel since 5.6) |
 | AMD temperature is N/A | no `k10temp`, or a kernel too old to know this CPU |
-| AMD FCLK / PPT is N/A | no `/dev/hsmp`, and HSMP Support must be enabled in the BIOS. Consumer Ryzen has none |
+| AMD FCLK / PPT is N/A | the kernel has no HSMP driver. EPYC / Threadripper PRO need 5.18 or newer, desktop-socket Threadripper needs 6.10 or newer; consumer Ryzen goes through `ryzen_smu`. Only if the kernel is new enough does the BIOS HSMP Support setting come into it |
 | memory temperature, DRAM voltage blank | no BMC on this machine, or `ipmitool` not installed |
 
-On AMD, the `install.sh` in Releases can set those drivers up for you.
+On AMD those drivers are set up in the background when the package installs.
+Progress:
+
+```bash
+journalctl -u sckoc-setup.service
+```
+
+Where the machine cannot reach GitHub, a line of `GH_PROXY=auto` in
+`/etc/sckoc/setup.conf` picks a working mirror; `GH_PROXY=off` pins the direct
+route. On a kernel too old none of this helps — a newer kernel is the only
+thing that fills those fields in.
 
 ## Uninstall
 

@@ -80,10 +80,16 @@ sudo sckoc --watch    # 每 2 秒自动刷新
 |---|---|
 | Intel uncore/mesh 为 N/A | 缺 `intel-uncore-frequency` 驱动（内核 5.6+ 自带） |
 | AMD 温度为 N/A | 缺 `k10temp`，或内核版本太老不认这颗 CPU |
-| AMD FCLK / PPT 为 N/A | 缺 `/dev/hsmp`，且需在 BIOS 打开 HSMP Support。消费级 Ryzen 本身没有 |
+| AMD FCLK / PPT 为 N/A | 内核太旧，没有 HSMP 驱动。EPYC / Threadripper PRO 需要 5.18 以上，桌面 Socket 的 Threadripper 需要 6.10 以上；消费级 Ryzen 走 `ryzen_smu`。内核够新却仍为 N/A，才需要去 BIOS 打开 HSMP Support |
 | 内存温度、DRAM 电压为空 | 机器没有 BMC，或没装 `ipmitool` |
 
-AMD 平台的这些驱动，Releases 里的 `install.sh` 可以自动配置。
+AMD 平台的这些驱动，包安装时会在后台自动配置，进度可以看：
+
+```bash
+journalctl -u sckoc-setup.service
+```
+
+机器访问不了 GitHub 时，在 `/etc/sckoc/setup.conf` 里写一行 `GH_PROXY=auto` 即可自动选择可用镜像；`GH_PROXY=off` 则固定直连。内核过旧的机器不必折腾，装一个新内核才是唯一能让这几项有数的办法。
 
 ## 卸载
 
