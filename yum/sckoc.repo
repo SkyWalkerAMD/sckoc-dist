@@ -1,0 +1,6 @@
+[sckoc]
+name=sckoc
+baseurl=https://skywalkeramd.github.io/sckoc-dist/yum/x86_64
+enabled=1
+gpgcheck=0
+repo_gpgcheck=0

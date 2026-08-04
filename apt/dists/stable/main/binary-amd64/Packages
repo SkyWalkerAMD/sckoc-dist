@@ -1,0 +1,25 @@
+Package: sckoc
+Version: 1.0.1-1
+Architecture: amd64
+Maintainer: SkyWalkerAMD <scka7t@gmail.com>
+Recommends: ipmitool
+Filename: pool/main/s/sckoc/sckoc_1.0.1-1_amd64.deb
+Size: 108808
+MD5sum: 140d1c9c9ef996b08b7eff846eaa443f
+SHA1: af1a30a82136e02c3f914407982b8ada4e46a9db
+SHA256: ad1af3a73c9f6ca3d80f14fd0848ff04bf88ccf8f3be71fe1db14aed45025efa
+Section: utils
+Priority: optional
+Homepage: https://github.com/SkyWalkerAMD/sckoc
+Description: Read-only MSR/HSMP hardware monitor for Intel and AMD
+ sckoc reports processor and platform state on Intel and AMD server systems:
+ per-socket and per-core temperature, frequency, voltage, power and C-state
+ residency, plus a static platform report covering security state, ratio
+ ceilings, turbo bins, power limits, per-DIMM memory and cache topology.
+ .
+ It is strictly read-only and never writes an MSR, so it is safe to run with
+ Secure Boot enabled and the kernel in integrity lockdown.
+ .
+ This package ships a statically linked binary and has no runtime
+ dependencies.
+
