@@ -22,7 +22,6 @@ Intel / AMD 服务器与工作站的**只读**硬件监控工具
 
 ```bash
 curl -fsSL https://skywalkeramd.github.io/sckoc-dist/setup.sh | sudo bash
-sudo dnf install -y sckoc          # Debian/Ubuntu 用: sudo apt update && sudo apt install -y sckoc
 ```
 
 也可以直接装 [Releases](https://github.com/SkyWalkerAMD/sckoc-dist/releases/latest) 里的包：
