@@ -25,7 +25,6 @@ rest of the system:
 
 ```bash
 curl -fsSL https://skywalkeramd.github.io/sckoc-dist/setup.sh | sudo bash
-sudo dnf install -y sckoc          # on Debian/Ubuntu: sudo apt update && sudo apt install -y sckoc
 ```
 
 Or install a package from [Releases](https://github.com/SkyWalkerAMD/sckoc-dist/releases/latest) directly:
