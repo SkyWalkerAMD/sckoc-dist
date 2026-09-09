@@ -1,0 +1,23 @@
+Architectures: amd64
+Codename: stable
+Components: main
+Date: Wed, 09 Sep 2026 02:56:59 +0000
+Label: sckoc
+Origin: sckoc
+Suite: stable
+MD5Sum:
+ ad4a577134f9b48387275f4c41b15ed4              134 Release
+ 2f6190ffb2ac0303c5117386c75fa776             1022 main/binary-amd64/Packages
+ 9e401e03099d4496581d4738d2c78772              661 main/binary-amd64/Packages.gz
+SHA1:
+ 73c8db091e8717a80b17e9d634c5cb8780956e0c              134 Release
+ 158edd40a0f38194645ee7c57ff37bcb11cebd64             1022 main/binary-amd64/Packages
+ 520825fd12ccc7d5060af9527d8723211622be20              661 main/binary-amd64/Packages.gz
+SHA256:
+ 524f87c096217e84d90cba67e86e6c2513689eea0eaf5e3ba9a0d70adb9133b9              134 Release
+ e71757fcd6dbcf62239fddb29e269c16ba1450c409291f0c48d1d4fee05eed0b             1022 main/binary-amd64/Packages
+ 871cb58c7006d3b289f9f5191761e8df42ac2b252000643e608d3370fe4171fa              661 main/binary-amd64/Packages.gz
+SHA512:
+ d960f250417d61e81bb05087368f47c8e0e5455180fbf0705a9f4add2fc335ddb5a9c3e62a50ca6a4a70c83efd49c651dd275df025ad7e2b120c16ec63cdc2c7              134 Release
+ cc0d411806d5d4700551c0ebdf4ce8af3a604768917f65fe3fba199eb50ea01364395556d89b808c27280adcdcb7b466e159981c348036fd481490d004c99abe             1022 main/binary-amd64/Packages
+ 90025e91217d062ea2607e649645283a86a54cbc995fa6d67a847ff03518fb87f12b72e6a540ddbb082001b1890f51f46e1999692e70c79fccec85bb5ee80dbd              661 main/binary-amd64/Packages.gz
